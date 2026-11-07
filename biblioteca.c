@@ -196,9 +196,74 @@ void addUser(UserWDog *watcher, UserElement *new){
     new->next = watcher->first;
     watcher->first = new;
 }
+//remoção nas listas
 
+//remoção do livro pelo id
+void deleteBookId(BookWDog *watcher, int id) {
+    BookElement *aux, *ant = NULL;
+    for (aux = watcher->first; aux != NULL; aux = aux->next) {
+        if (aux->data->id == id) {
+            if (ant == NULL)
+                watcher->first = aux->next;
+            else
+                ant->next = aux->next;
+            free(aux->data);
+            free(aux);
+            return;
+        }
+    ant = aux;
+    }
+}
+
+//remoção do user pelo email
+void deleteUserEmail(UserWDog *watcher, char *email) {
+    UserElement *aux, *ant = NULL;
+    for (aux = watcher->first; aux != NULL; aux = aux->next) {
+        if (strcmp(aux->data->email, email) == 0) {
+            if (ant == NULL)
+                watcher->first = aux->next;
+            else
+                ant->next = aux->next;
+            free(aux->data);
+            free(aux);
+            return;
+        }
+    ant = aux;
+    }
+}
+//prints
+
+void printBook(Book *b) {
+    printf("ID: %d, Titulo: %s, Autor: %s, Ano: %d\n",b->id, b->title, b->author, b->year);
+    if (b->status == 0)
+        printf("Status: Disponivel\n");
+    else
+        printf("Status: Emprestado %s\n", b->userEmail);
+}
+
+void printUser(User *u) {
+    printf("Nome: %s, Email: %s\n", u->name, u->email);
+}
 
 int main(){
+    BookWDog *books = createBookWatcher();
+    UserWDog *users = createUserWatcher();
+    TreeWDog *ids = createTreeWatcher();
+    
+    addBookInOrder(books, createBookElement(1, "Dom Casmurro", "Machado", 1899));
+    ids->raiz = inserirNode(ids->raiz, createnode(1));
+    addBookInOrder(books, createBookElement(2, "Iracema", "Alencar", 1865));
+    ids->raiz = inserirNode(ids->raiz, createnode(2));
+    
+    addUser(users, createUserElement("ana@email.com", "Ana"));
 
+    printBook(books->first->data);
+    printBook(books->first->next->data);
+    printUser(users->first->data);
+
+    deleteBookId(books, 1);
+    ids->raiz = removeNode(ids->raiz, 1);
+
+    printBook(books->first->data);
     return 0;
 }

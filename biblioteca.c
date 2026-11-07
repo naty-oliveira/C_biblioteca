@@ -161,8 +161,44 @@ Node *removeNode(Node *raiz, int id) {
                 aux=aux->right;
             }
             raiz->id=aux->id;
-            raiz->left=delete(raiz->left,raiz->id); //procura o valor original 
+            raiz->left=removeNode(raiz->left,raiz->id); //procura o valor original 
             }
         }
     return raiz;
+}
+//inserir nas listas
+
+//insere o livro em ordem pelo id, apesar de ja ser sequencial
+void addBookInOrder(BookWDog *watcher, BookElement *new){
+    if (watcher->first==NULL) {
+        watcher->first=new;
+        return;
+    }
+    BookElement *aux, *ant = NULL;
+    for (aux = watcher->first;aux != NULL;aux = aux->next){
+        if (aux->data->id > new->data->id)
+            break;
+        ant = aux;
+    }
+    if (aux==NULL) {
+        ant->next=new;
+        return;
+    }
+    new->next=aux;
+    if (ant==NULL)
+        watcher->first=new;
+    else
+        ant->next=new;
+}
+
+//insere o user no inicio
+void addUser(UserWDog *watcher, UserElement *new){
+    new->next = watcher->first;
+    watcher->first = new;
+}
+
+
+int main(){
+
+    return 0;
 }

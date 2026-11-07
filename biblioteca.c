@@ -231,6 +231,27 @@ void deleteUserEmail(UserWDog *watcher, char *email) {
     ant = aux;
     }
 }
+//buscas, para saber se o livro/usuario existem antes de fazer as funções
+
+//a árvore descarta os ids iguais
+Book *buscarBook(BookWDog *books, TreeWDog *ids, int id) {
+    BookElement *aux;
+    if(buscarNode(ids->raiz, id)==0)
+        return NULL;
+    for (aux=books->first; aux!=NULL; aux=aux->next) {
+        if(aux->data->id==id)
+            return aux->data;
+    }
+    return NULL;  
+}
+
+User *buscarUser(UserWDog *users, char *email) {
+    UserElement *aux;
+    for (aux=users->first; aux!=NULL; aux=aux->next)
+        if (strcmp(aux->data->email, email)==0) //==0 se são iguais
+            return aux->data;
+    return NULL;
+}
 //prints
 
 void printBook(Book *b) {
@@ -243,6 +264,40 @@ void printBook(Book *b) {
 
 void printUser(User *u) {
     printf("Nome: %s, Email: %s\n", u->name, u->email);
+}
+//liberar memória
+
+void freeBooks(BookWDog *watcher) {
+    BookElement *aux, *prox;
+    for (aux=watcher->first; aux!=NULL; aux=prox) {
+        prox=aux->next;      //guarda o próximo antes de apagar
+        free(aux->data);
+        free(aux);
+    }
+    free(watcher);
+}
+
+void freeUsers(UserWDog *watcher) {
+    UserElement *aux, *prox;
+    for (aux=watcher->first;aux!=NULL; aux=prox) {
+        prox=aux->next;
+        free(aux->data);
+        free(aux);
+    }
+    free(watcher);
+}
+
+void freeNodes(Node *raiz) {
+    if (raiz==NULL) 
+        return;
+    freeNodes(raiz->left);
+    freeNodes(raiz->right);
+    free(raiz);
+}
+
+void freeTree(TreeWDog *watcher) {
+    freeNodes(watcher->raiz);
+    free(watcher);
 }
 
 int main(){
@@ -261,9 +316,30 @@ int main(){
     printBook(books->first->next->data);
     printUser(users->first->data);
 
+    Book *b = buscarBook(books, ids, 2);
+    if (b != NULL)
+        printBook(b);
+    else
+        printf("Livro nao encontrado\n");
+
+    // busca livro que nao existe
+    if (buscarBook(books, ids, 99) == NULL)
+        printf("Livro 99 nao encontrado\n");
+
+    // busca usuario por email
+    User *u = buscarUser(users, "ana@email.com");
+    if (u != NULL)
+        printUser(u);
+    else
+        printf("Usuario nao cadastrado\n");
+
     deleteBookId(books, 1);
     ids->raiz = removeNode(ids->raiz, 1);
+    if (buscarBook(books, ids, 1) == NULL)
+        printf("Livro 1 removido\n");
 
-    printBook(books->first->data);
+    freeBooks(books);
+    freeUsers(users);
+    freeTree(ids);
     return 0;
 }

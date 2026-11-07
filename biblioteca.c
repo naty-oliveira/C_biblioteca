@@ -109,3 +109,60 @@ UserElement *createUserElement(char *email, char *name) {
 
     return new;
 }
+
+//arvore de ids (extra), cadastra e verifica o id dos livros
+Node *inserirNode(Node *raiz, Node *new) {
+    if(raiz==NULL)
+        return new;
+    if(raiz->id>=new->id)
+        raiz->left=inserirNode(raiz->left,new);
+    else
+        raiz->right=inserirNode(raiz->right,new);
+    return raiz;
+}
+
+int buscarNode(Node *raiz, int id) {
+    if (raiz == NULL) 
+        return 0;
+    if (id == raiz->id) 
+        return 1;
+    if (id < raiz->id) 
+        return buscarNode(raiz->left, id);
+    return buscarNode(raiz->right, id);
+}
+
+Node *removeNode(Node *raiz, int id) {
+    if (raiz == NULL) 
+        return NULL;
+    if (id < raiz->id) 
+        raiz->left=removeNode(raiz->left, id);
+    else{
+        if (id > raiz->id) 
+            raiz->right=removeNode(raiz->right, id);
+        else {
+            //nenhum ou um filho
+            if(raiz->left==NULL && raiz->right==NULL){ //se for a folha retorna o filho dela(NULL)
+                free(raiz);
+                return NULL;
+            }
+            if (raiz->left==NULL) {
+                Node *aux =raiz->right;
+                free(raiz);
+                return aux;
+            }
+            if (raiz->right==NULL) {
+                Node *aux =raiz->left;
+                free(raiz);
+                return aux;
+            }
+            //se tiver dois filhos
+            Node *aux=raiz->left;
+            while(aux->right!=NULL){ //enquanto o filho esquerdo tiver filho direito (maior dos menores)
+                aux=aux->right;
+            }
+            raiz->id=aux->id;
+            raiz->left=delete(raiz->left,raiz->id); //procura o valor original 
+            }
+        }
+    return raiz;
+}

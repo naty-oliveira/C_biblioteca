@@ -386,7 +386,43 @@ void consultarEmprestimos(BookWDog *books, UserWDog *users) {
     if (achou==0) 
         printf("Usuario nao possui livros emprestados\n");
 }
+//atualização
 
+void atualizarBook(BookWDog *books, TreeWDog *ids){
+    int id;
+
+    printf("Código do livro: ");
+    scanf("%d", &id);
+
+    Book *b=buscarBook(books, ids, id);
+    if (b==NULL) {
+        printf("Livro não encontrado\n");
+        return;
+    }
+    printf("Novo título: ");
+    scanf("%s", b->title);
+    printf("Novo autor: ");
+    scanf("%s", b->author);
+    printf("Novo ano: ");
+    scanf("%d", &b->year);
+    printf("Livro atualizado\n");
+}
+
+void atualizarUser(UserWDog *users){
+    char email[MAX_STR];
+
+    printf("Email do usuário: ");
+    scanf("%s", email);
+
+    User *u=buscarUser(users, email);
+    if (u==NULL) {
+        printf("Usuário não cadastrado\n");
+        return;
+    }
+    printf("Novo nome: ");
+    scanf("%s", u->name);
+    printf("Usuário atualizado\n");
+}
 //liberar memória
 
 void freeBooks(BookWDog *watcher) {
@@ -431,36 +467,51 @@ int subMenu(char *op) {
     return opcao;
 }
 
-void cadastroMenu(BookWDog *books, UserWDog *users, TreeWDog *ids) {
-    int option = subMenu("1-Livros  2-Usuarios");
+void cadastroMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
+    int op=subMenu("1-Livros  2-Usuarios");
 
-    while (option != 0) {
-        if (option == 1) 
+    while (op!= 0){
+        if(op== 1) 
             cadastroBook(books, ids);
         else 
-            if (option == 2) 
+            if(op== 2) 
                 cadastroUser(users);
             else 
                 printf("Opcao invalida\n");
-        option = subMenu("1-Livros  2-Usuarios");
+        op=subMenu("1-Livros  2-Usuarios");
     }
 }
 
-void buscarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids) {
-    int option = subMenu("1-Livros  2-Usuarios  3-Emprestimos");
+void buscarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
+    int op=subMenu("1-Livros  2-Usuarios  3-Emprestimos");
 
-    while (option != 0) {
-        if (option == 1) 
+    while(op!= 0){
+        if (op== 1) 
             consultaBooks(books, ids);
         else 
-            if (option == 2) 
+            if(op== 2) 
                 consultaUsers(users);
             else 
-                if (option == 3) 
+                if(op== 3) 
                     consultarEmprestimos(books, users);
                 else 
                     printf("Opcao invalida\n");
-        option = subMenu("1-Livros  2-Usuarios  3-Emprestimos");
+        op=subMenu("1-Livros  2-Usuarios  3-Emprestimos");
+    }
+}
+
+void atualizarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
+    int op=subMenu("1-Livros  2-Usuarios");
+
+    while (op!= 0){
+        if(op== 1) 
+            atualizarBook(books, ids);
+        else 
+            if(op==2) 
+                atualizarUser(users);
+            else 
+                printf("Opçãoo inválida\n");
+        op=subMenu("1-Livros  2-Usuarios");
     }
 }
 
@@ -478,20 +529,23 @@ int mainMenu() {
 }
 
 int main(){
-    BookWDog *books = createBookWatcher();
-    UserWDog *users = createUserWatcher();
-    TreeWDog *ids = createTreeWatcher();
-    int option = mainMenu();
+    BookWDog *books=createBookWatcher();
+    UserWDog *users=createUserWatcher();
+    TreeWDog *ids=createTreeWatcher();
+    int op=mainMenu();
 
-    while (option != 0) {
-        if (option == 1)
+    while (op!= 0) {
+        if (op== 1)
             cadastroMenu(books, users, ids);
         else
-            if (option == 2)
+            if (op== 2)
                 buscarMenu(books, users, ids);
             else
-                printf("Opcao invalida\n");
-        option = mainMenu();
+                if(op==3)
+                    atualizarMenu(books,users,ids);
+                else
+                    printf("Opcao invalida\n");
+        op= mainMenu();
     }
     printf("Acabou!\n");
     freeBooks(books);

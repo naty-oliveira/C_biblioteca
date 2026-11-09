@@ -423,6 +423,105 @@ void atualizarUser(UserWDog *users){
     scanf("%s", u->name);
     printf("Usuário atualizado\n");
 }
+//excluir
+
+void removeBook(BookWDog *books, TreeWDog *ids){
+    int id;
+
+    printf("Código do livro: ");
+    scanf("%d",&id);
+
+    Book *b=buscarBook(books, ids, id);
+    if(b==NULL){
+        printf("Livro não encontrado. Exclusão não realizada\n");
+        return;
+    }
+    if(b->status==1){
+        printf("Livro esta emprestado. Exclusão não realizada\n");
+        return;
+    }
+    deleteBookId(books, id);
+    ids->raiz=removeNode(ids->raiz, id);
+    printf("Livro excluido\n");
+}
+
+//quantos livros o usuário tem emprestados
+int emprestimoscount(BookWDog *books, char *email){
+    int total=0;
+    BookElement *aux;
+    for (aux=books->first; aux!=NULL; aux=aux->next)
+        if (aux->data->status==1 && strcmp(aux->data->userEmail, email) == 0)
+            total++;
+    return total;
+}
+
+void removeUser(BookWDog *books, UserWDog *users){
+    char email[MAX_STR];
+
+    printf("Email do usuario: ");
+    scanf("%s",email);
+
+    if(buscarUser(users,email)==NULL){
+        printf("Usuário não cadastrado. Exclusão não realizada\n");
+        return;
+    }
+    if(emprestimoscount(books, email)>0){
+        printf("Usuário possui livros emprestados. Exclusão não realizada\n");
+        return;
+    }
+    deleteUserEmail(users, email);
+    printf("Usuário excluido\n");
+}
+//emprestimo e devolução
+
+void emprestarBook(BookWDog *books, UserWDog *users, TreeWDog *ids){
+    int id;
+    char email[MAX_STR];
+
+    printf("Código do livro: ");
+    scanf("%d",&id);
+
+    Book *b=buscarBook(books, ids, id);
+    if(b==NULL){
+        printf("Livro não encontrado\n");
+        return;
+    }
+    if(b->status==1){
+        printf("Livro já esta emprestado\n");
+        return;
+    }
+    printf("Email do usuário: ");
+    scanf("%s", email);
+
+    if (buscarUser(users,email)==NULL){
+        printf("Usuário não cadastrado\n");
+        return;
+    }
+    b->status=1;
+    strcpy(b->userEmail, email);
+    b->totalemp++;
+    printf("Empréstimo realizado\n");
+}
+
+void devolverBook(BookWDog *books, TreeWDog *ids){
+    int id;
+
+    printf("Código do livro: ");
+    scanf("%d", &id);
+
+    Book *b=buscarBook(books,ids,id);
+    if(b==NULL){
+        printf("Livro não encontrado\n");
+        return;
+    }
+    if(b->status==0){
+        printf("Livro não estava emprestado\n");
+        return;
+    }
+    b->status = 0;
+    strcpy(b->userEmail,"");
+    printf("Devolução realizada\n");
+}
 //liberar memória
 
 void freeBooks(BookWDog *watcher) {
@@ -515,13 +614,28 @@ void atualizarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
     }
 }
 
+void removerMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
+    int op=subMenu("1-Livros  2-Usuarios");
+
+    while(op!=0){
+        if(op==1) 
+            removeBook(books, ids);
+        else 
+            if(op==2) 
+                removeUser(books, users);
+            else 
+                printf("Opcao invalida\n");
+        op=subMenu("1-Livros  2-Usuarios");
+    }
+}
+
 //Mostra o menu principal e lê a opção
 int mainMenu() {
     int op;
 
     printf("\n__________S2_BIBLIOTECA _S2__________\n");
-    printf("1-Cadastro\n2-Consulta\n3-Atualizacao\n4-Exclusao\n");
-    printf("5-Emprestimo\n6-Devolucao\n7-Estatisticas\n0-Sair\n");
+    printf("1-Cadastro\n2-Consulta\n3-Atualização\n4-Exclusão\n");
+    printf("5-Empréstimo\n6-Devolução\n7-Estatísticas\n0-Sair\n");
     
     printf("Opção: ");
     scanf("%d", &op);
@@ -544,8 +658,17 @@ int main(){
                 if(op==3)
                     atualizarMenu(books,users,ids);
                 else
-                    printf("Opcao invalida\n");
-        op= mainMenu();
+                    if(op==4)
+                        removerMenu(books,users,ids);
+                    else
+                        if(op==5)
+                            emprestarBook(books,users,ids);
+                        else
+                            if(op==6)
+                                devolverBook(books,ids);      
+                            else
+                                printf("Opção inválida\n");
+        op=mainMenu();
     }
     printf("Acabou!\n");
     freeBooks(books);

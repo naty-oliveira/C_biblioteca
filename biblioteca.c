@@ -522,6 +522,43 @@ void devolverBook(BookWDog *books, TreeWDog *ids){
     strcpy(b->userEmail,"");
     printf("Devolução realizada\n");
 }
+//estatísticas
+
+void estatisticas(BookWDog *books, UserWDog *users){
+    int usermais=0,quant=0,livromais=0;
+    BookElement *b;
+    UserElement *u;
+
+    //livro mais emprestado, aparece dois ou mais se tiver empate
+    for(b=books->first;b!= NULL;b=b->next){
+        if(b->data->totalemp>livromais)
+            livromais=b->data->totalemp;
+    }
+    if(livromais==0)
+        printf("Nenhum emprestimo\n");
+    else{
+        printf("Livro(s) mais emprestado(s) (%d vezes):\n",livromais);
+        for (b=books->first; b!=NULL; b=b->next){
+            if (b->data->totalemp==livromais)
+                printBook(b->data);
+        }  
+    }
+    //usuario com mais emprestimo, aparece mais de um se tiver empate
+    for (u=users->first;u!=NULL;u=u->next) {
+        quant=emprestimoscount(books, u->data->email);
+        if (quant>usermais)
+            usermais=quant;
+    }
+    if(usermais==0)
+        printf("Usuario com mais emprestimos ativos: nenhum\n");
+    else{
+        printf("Usuario(s) com mais emprestimos ativos (%d livros):\n",usermais);
+        for(u = users->first; u != NULL; u = u->next){
+            if (emprestimoscount(books, u->data->email)==usermais)
+                printUser(u->data);
+        }  
+    }
+}
 //liberar memória
 
 void freeBooks(BookWDog *watcher) {
@@ -667,7 +704,10 @@ int main(){
                             if(op==6)
                                 devolverBook(books,ids);      
                             else
-                                printf("Opção inválida\n");
+                                if(op==7)
+                                    estatisticas(books,users);
+                                else
+                                    printf("Opção inválida\n");
         op=mainMenu();
     }
     printf("Acabou!\n");

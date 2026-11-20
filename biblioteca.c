@@ -55,6 +55,7 @@ typedef struct{
     Node *raiz;
 } TreeWDog;
 
+//criação
 Node *createnode(int id){
     Node *new=malloc(sizeof(Node));
     new->id=id;

@@ -1,3 +1,6 @@
+//Eu utilizei IA para revisar meu código final, me ajudou para corrigir alguns erros de escrita
+//e adicionar mensagens de "opção inválida" quando necessário
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -175,7 +178,7 @@ void addBookInOrder(BookWDog *watcher, BookElement *new){
         return;
     }
     BookElement *aux, *ant=NULL;
-    for (aux=watcher->first; aux!=NULL; aux=aux->next){
+    for (aux=watcher->first;aux!=NULL;aux=aux->next){
         if(aux->data->id > new->data->id)
             break;
         ant=aux;
@@ -202,7 +205,7 @@ void addUser(UserWDog *watcher, UserElement *new){
 void deleteBookId(BookWDog *watcher, int id){
     BookElement *aux, *ant=NULL;
 
-    for (aux=watcher->first; aux!=NULL; aux=aux->next){
+    for (aux=watcher->first;aux!=NULL;aux=aux->next){
         if(aux->data->id==id){
             if(ant==NULL)
                 watcher->first=aux->next;
@@ -236,21 +239,22 @@ void deleteUserEmail(UserWDog *watcher, char *email){
 //prints
 
 void printBook(Book *b){
-    printf("ID: %d, Titulo: %s, Autor: %s, Ano: %d\n",b->id, b->title, b->author, b->year);
+    printf("ID: %d, Titulo: %s, Autor: %s, Ano: %d\n",b->id,b->title,b->author,b->year);
     if (b->status==0)
         printf("Status: Disponivel\n");
     else
-        printf("Status: Emprestado %s\n", b->userEmail);
+        printf("Status: Emprestado %s\n",b->userEmail);
 }
 
 void printUser(User *u){
-    printf("Nome: %s, Email: %s\n", u->name, u->email);
+    printf("Nome: %s, Email: %s\n",u->name,u->email);
 }
 //buscas, para saber se o livro/usuario existem antes de fazer as funções
 
 //a árvore descarta os ids iguais
 Book *buscarBook(BookWDog *books,TreeWDog *ids, int id){
     BookElement *aux;
+
     if (buscarNode(ids->raiz, id) == 0) //apesar de a arvore ser desbalanciada vou deixar 
         return NULL;
     
@@ -267,6 +271,7 @@ User *buscarUser(UserWDog *users, char *email){
     for(aux=users->first; aux!=NULL; aux=aux->next)
         if(strcmp(aux->data->email, email)==0) //==0 se são iguais
             return aux->data;
+            
     return NULL;
 }
 //cadastro
@@ -283,7 +288,7 @@ void cadastroBook(BookWDog *books, TreeWDog *ids){
     printf("Ano de publicacao: ");
     scanf("%d", &year);
 
-    addBookInOrder(books, createBookElement(id, title, author, year));
+    addBookInOrder(books, createBookElement(id,title,author,year));
     ids->raiz = inserirNode(ids->raiz, createnode(id)); //insere e cria um elemento com o id na arvore
 
     printf("Livro cadastrado com o codigo %d\n", id);
@@ -293,13 +298,13 @@ void cadastroUser(UserWDog *users){
     char email[MAX_STR], name[MAX_STR];
 
     printf("Email: ");
-    scanf("%s", email);
-    if (buscarUser(users, email)!= NULL) {
+    scanf("%s",email);
+    if (buscarUser(users, email)!=NULL) {
         printf("Email ja cadastrado\n");
         return;
     }
     printf("Nome: ");
-    scanf("%s", name);
+    scanf("%s",name);
 
     addUser(users, createUserElement(email, name));
     printf("Usuario cadastrado\n");
@@ -311,11 +316,11 @@ void consultaBooks(BookWDog *books, TreeWDog *ids){
     char author[MAX_STR];
 
     printf("1-Por codigo ou 2-Por autor: ");
-    scanf("%d", &op);
+    scanf("%d",&op);
 
     if(op==1){
         printf("Codigo: ");
-        scanf("%d", &id);
+        scanf("%d",&id);
 
         Book *b=buscarBook(books,ids, id);
         if(b==NULL) 
@@ -323,18 +328,22 @@ void consultaBooks(BookWDog *books, TreeWDog *ids){
         else 
             printBook(b);
     }else{
-        printf("Autor: ");
-        scanf("%s", author);
+        if(op==2){
+            printf("Autor: ");
+            scanf("%s",author);
 
-        BookElement *aux;
-        for(aux=books->first; aux!=NULL; aux=aux->next) {
-            if(strcmp(aux->data->author, author)==0){
-                printBook(aux->data);
-                achou++;
+            BookElement *aux;
+            for(aux=books->first;aux!=NULL;aux=aux->next){
+                if(strcmp(aux->data->author, author)==0){
+                    printBook(aux->data);
+                    achou++;
+                }
             }
-        }
-        if(achou==0) 
-            printf("Livro não encontrado\n");  
+            if(achou==0) 
+                printf("Livro não encontrado\n"); 
+        }else{
+            printf("Opção inválida\n");
+        }   
     }
 }
 
@@ -356,18 +365,20 @@ void consultaUsers(UserWDog *users){
             printUser(u);
     }else{
         if (op==2){
-        printf("Nome: ");
-        scanf("%s", name);
+            printf("Nome: ");
+            scanf("%s", name);
 
-        UserElement *aux;
-        for(aux=users->first; aux!=NULL; aux=aux->next){
-            if(strcmp(aux->data->name, name)==0){
-                printUser(aux->data);
-                achou++;
+            UserElement *aux;
+            for(aux=users->first; aux!=NULL; aux=aux->next){
+                if(strcmp(aux->data->name, name)==0){
+                    printUser(aux->data);
+                    achou++;
+                }
             }
-        }
-        if(achou==0) 
-            printf("Usuario não cadastrado\n");
+            if(achou==0) 
+                printf("Usuario não cadastrado\n");
+        }else{
+            printf("Opção inválida\n");
         }
     }
 }
@@ -377,14 +388,14 @@ void consultarEmprestimos(BookWDog *books, UserWDog *users){
     int achou=0;
 
     printf("Email do usuario: ");
-    scanf("%s", email);
+    scanf("%s",email);
     if(buscarUser(users, email)==NULL){
         printf("Usuario não cadastrado\n");
         return;
     }
     BookElement *aux;
     for (aux=books->first; aux!=NULL; aux=aux->next){
-        if(aux->data->status == 1 && strcmp(aux->data->userEmail, email)==0){
+        if(aux->data->status==1 && strcmp(aux->data->userEmail, email)==0){
             printBook(aux->data);
             achou++;
         }
@@ -398,7 +409,7 @@ void atualizarBook(BookWDog *books, TreeWDog *ids){
     int id;
 
     printf("Código do livro: ");
-    scanf("%d", &id);
+    scanf("%d",&id);
 
     Book *b=buscarBook(books, ids, id);
     if(b==NULL){
@@ -406,11 +417,11 @@ void atualizarBook(BookWDog *books, TreeWDog *ids){
         return;
     }
     printf("Novo título: ");
-    scanf("%s", b->title);
+    scanf("%s",b->title);
     printf("Novo autor: ");
-    scanf("%s", b->author);
+    scanf("%s",b->author);
     printf("Novo ano: ");
-    scanf("%d", &b->year);
+    scanf("%d",&b->year);
     printf("Livro atualizado\n");
 }
 
@@ -652,7 +663,7 @@ void atualizarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
             if(op==2) 
                 atualizarUser(users);
             else 
-                printf("Opçãoo inválida\n");
+                printf("Opção inválida\n");
         op=subMenu("1-Livros  2-Usuarios");
     }
 }

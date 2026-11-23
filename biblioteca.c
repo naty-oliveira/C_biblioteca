@@ -240,9 +240,9 @@ void deleteUserEmail(UserWDog *watcher, char *email){
 //prints
 
 void printBook(Book *b){
-    printf("ID: %d, Titulo: %s, Autor: %s, Ano: %d\n",b->id,b->title,b->author,b->year);
+    printf("Id: %d, Título: %s, Autor: %s, Ano: %d\n",b->id,b->title,b->author,b->year);
     if (b->status==0)
-        printf("Status: Disponivel\n");
+        printf("Status: Disponível\n");
     else
         printf("Status: Emprestado %s\n",b->userEmail);
 }
@@ -282,17 +282,17 @@ void cadastroBook(BookWDog *books, TreeWDog *ids){
     int year, id;
 
     id=books->nextId++; //atribui o valor do id e ja incrementa
-    printf("Titulo: ");
+    printf("Título: ");
     scanf("%s", title);
     printf("Autor: ");
     scanf("%s", author);
-    printf("Ano de publicacao: ");
+    printf("Ano de publicação: ");
     scanf("%d", &year);
 
     addBookInOrder(books, createBookElement(id,title,author,year));
     ids->raiz = inserirNode(ids->raiz, createnode(id)); //insere e cria um elemento com o id na arvore
 
-    printf("Livro cadastrado com o codigo %d\n", id);
+    printf("Livro cadastrado com o código %d\n", id);
 }
 
 void cadastroUser(UserWDog *users){
@@ -308,7 +308,7 @@ void cadastroUser(UserWDog *users){
     scanf("%s",name);
 
     addUser(users, createUserElement(email, name));
-    printf("Usuario cadastrado\n");
+    printf("Usuário cadastrado\n");
 }
 
 //Consulta
@@ -316,11 +316,11 @@ void consultaBooks(BookWDog *books, TreeWDog *ids){
     int op, id, achou=0;
     char author[MAX_STR];
 
-    printf("1-Por codigo ou 2-Por autor: ");
+    printf("1-Por código ou 2-Por autor: ");
     scanf("%d",&op);
 
     if(op==1){
-        printf("Codigo: ");
+        printf("Código: ");
         scanf("%d",&id);
 
         Book *b=buscarBook(books,ids, id);
@@ -361,7 +361,7 @@ void consultaUsers(UserWDog *users){
 
         User *u=buscarUser(users, email);
         if (u==NULL) 
-            printf("Usuario não cadastrado\n");
+            printf("Usuário não cadastrado\n");
         else 
             printUser(u);
     }else{
@@ -377,7 +377,7 @@ void consultaUsers(UserWDog *users){
                 }
             }
             if(achou==0) 
-                printf("Usuario não cadastrado\n");
+                printf("Usuário não cadastrado\n");
         }else{
             printf("Opção inválida\n");
         }
@@ -388,7 +388,7 @@ void consultarEmprestimos(BookWDog *books, UserWDog *users){
     char email[MAX_STR];
     int achou=0;
 
-    printf("Email do usuario: ");
+    printf("Email do usuário: ");
     scanf("%s",email);
     if(buscarUser(users, email)==NULL){
         printf("Usuario não cadastrado\n");
@@ -402,7 +402,7 @@ void consultarEmprestimos(BookWDog *books, UserWDog *users){
         }
     }
     if(achou==0) 
-        printf("Usuario nao possui livros emprestados\n");
+        printf("Usuário não possui livros emprestados\n");
 }
 //atualização
 
@@ -476,7 +476,7 @@ int emprestimoscount(BookWDog *books, char *email){
 void removeUser(BookWDog *books, UserWDog *users){
     char email[MAX_STR];
 
-    printf("Email do usuario: ");
+    printf("Email do usuário: ");
     scanf("%s",email);
 
     if(buscarUser(users,email)==NULL){
@@ -553,7 +553,7 @@ void estatisticas(BookWDog *books, UserWDog *users){
             livromais=b->data->totalemp;
     }
     if(livromais==0)
-        printf("Nenhum emprestimo\n");
+        printf("Nenhum empréstimo\n");
     else{
         printf("Livro(s) mais emprestado(s) (%d vezes):\n",livromais);
         for (b=books->first; b!=NULL; b=b->next){
@@ -568,9 +568,9 @@ void estatisticas(BookWDog *books, UserWDog *users){
             usermais=quant;
     }
     if(usermais==0)
-        printf("Usuario com mais emprestimos ativos: nenhum\n");
+        printf("Usuario com mais empréstimos ativos: nenhum\n");
     else{
-        printf("Usuario(s) com mais emprestimos ativos (%d livros):\n",usermais);
+        printf("Usuário(s) com mais empréstimos ativos (%d livros):\n",usermais);
         for(u = users->first; u != NULL; u = u->next){
             if (emprestimoscount(books, u->data->email)==usermais)
                 printUser(u->data);
@@ -622,7 +622,7 @@ int subMenu(char *op) {
 }
 
 void cadastroMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
-    int op=subMenu("1-Livros  2-Usuarios");
+    int op=subMenu("1-Livros  2-Usuários");
 
     while (op!= 0){
         if(op== 1) 
@@ -631,13 +631,13 @@ void cadastroMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
             if(op== 2) 
                 cadastroUser(users);
             else 
-                printf("Opcao invalida\n");
-        op=subMenu("1-Livros  2-Usuarios");
+                printf("Opção inválida\n");
+        op=subMenu("1-Livros  2-Usuários");
     }
 }
 
 void buscarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
-    int op=subMenu("1-Livros  2-Usuarios  3-Emprestimos");
+    int op=subMenu("1-Livros  2-Usuários  3-Empréstimos");
 
     while(op!= 0){
         if (op== 1) 
@@ -649,13 +649,13 @@ void buscarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
                 if(op== 3) 
                     consultarEmprestimos(books, users);
                 else 
-                    printf("Opcao invalida\n");
-        op=subMenu("1-Livros  2-Usuarios  3-Emprestimos");
+                    printf("Opção inválida\n");
+        op=subMenu("1-Livros  2-Usuários  3-Empréstimos");
     }
 }
 
 void atualizarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
-    int op=subMenu("1-Livros  2-Usuarios");
+    int op=subMenu("1-Livros  2-Usuários");
 
     while (op!= 0){
         if(op== 1) 
@@ -665,12 +665,12 @@ void atualizarMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
                 atualizarUser(users);
             else 
                 printf("Opção inválida\n");
-        op=subMenu("1-Livros  2-Usuarios");
+        op=subMenu("1-Livros  2-Usuários");
     }
 }
 
 void removerMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
-    int op=subMenu("1-Livros  2-Usuarios");
+    int op=subMenu("1-Livros  2-Usuários");
 
     while(op!=0){
         if(op==1) 
@@ -679,8 +679,8 @@ void removerMenu(BookWDog *books, UserWDog *users, TreeWDog *ids){
             if(op==2) 
                 removeUser(books, users);
             else 
-                printf("Opcao invalida\n");
-        op=subMenu("1-Livros  2-Usuarios");
+                printf("Opçãoo inválida\n");
+        op=subMenu("1-Livros  2-Usuários");
     }
 }
 
